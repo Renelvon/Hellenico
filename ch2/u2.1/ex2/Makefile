@@ -1,8 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra -Weffc++ -O2 -pedantic -ansi
+CFLAGS = -Wall -O2 -Wextra -Weffc++ -FORTIFY_SOURCE -pedantic -ansi
 
 main : main.cpp
 	$(CC) $(CFLAGS) $^ -o $@
-
-clean :
-	rm -f main qubits
