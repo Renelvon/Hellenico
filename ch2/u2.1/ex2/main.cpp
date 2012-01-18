@@ -88,7 +88,7 @@ int main() {
         if (off[0] > 0 && lamps[off[0]] == '1') isValid = false;
         if (off[1] > 0 && lamps[off[1]] == '1') isValid = false;
     
-        if (C < 4 && opcount != C) isValid = false;
+        if (C < 3 && opcount != C) isValid = false;
         if (isValid) {
             temp.assign(lamps + 1, lamps + N + 1);
             sols.push_back(temp);
@@ -96,10 +96,9 @@ int main() {
     }
 
     sort(sols.begin(), sols.end());
-    copy(sols.begin(),
-         unique(sols.begin(), sols.end()),
-         ostream_iterator<string>(outFile, "\n")
-        );
+    unique_copy(sols.begin(), sols.end(),
+                ostream_iterator<string>(outFile, "\n")
+               );
 
     fclose(inFile);
     outFile.close();
