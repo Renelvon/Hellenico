@@ -88,7 +88,7 @@ int main() {
         if (off[0] > 0 && lamps[off[0]] == '1') isValid = false;
         if (off[1] > 0 && lamps[off[1]] == '1') isValid = false;
     
-        if (opcount > C) isValid = false;
+        if (C < 4 && opcount != C) isValid = false;
         if (isValid) {
             temp.assign(lamps + 1, lamps + N + 1);
             sols.push_back(temp);
