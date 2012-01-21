@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 
 using namespace std;
 
@@ -35,13 +36,25 @@ int main() {
            sum += nums[j];
            profit[i][j] = sum;
         }
+        copy(profit[i], profit[i] + N,
+             ostream_iterator<unsigned int>(cout, " ")
+            );
+        cout << endl;
     }
+    cout << endl;
 
     unsigned int totalSum = profit[0][N - 1], p1max = 0;
     for (unsigned int i = 1; i < N; ++i) {
         for (unsigned int ii = 0, j = i; j < N; ++ii, ++j) {
            profit[ii][j] -= min(profit[ii][j - 1], profit[ii + 1][j]);
         }
+        for (unsigned j = 0; j < N; ++j) {
+            copy(profit[j], profit[j] + N,
+                 ostream_iterator<unsigned int>(cout, " ")
+                );
+            cout << endl;
+        }
+        cout << endl;
     }
     
     p1max = profit[0][N - 1];
