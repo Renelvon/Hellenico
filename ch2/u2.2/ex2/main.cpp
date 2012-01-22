@@ -19,17 +19,20 @@ int main() {
     }
 
     const unsigned int maxN = 100;
-    unsigned int profit[maxN + 1][maxN + 1], nums[maxN + 1];
-    
+    unsigned int profit[maxN][maxN], nums[maxN];
+    for (unsigned int i = 0; i < maxN; ++i) {
+        fill(profit[i], profit[i] + maxN, 0);
+    }
+    fill(nums, nums + maxN, 0);
+
     unsigned int N;
     inFile >> N;
 
     for (unsigned int i = 0; i < N; ++i) {
-        fill(profit[i], profit[i] + N, 0);
         inFile >> nums[i];
     }
     
-    for (unsigned int i = 0, sum = 0; i < N; ++i) {
+    for (unsigned int i = 0, sum; i < N; ++i) {
         sum = 0;
         for (unsigned int j = i; j < N; ++j) {
            sum += nums[j];
@@ -43,15 +46,9 @@ int main() {
            profit[ii][j] -= min(profit[ii][j - 1], profit[ii + 1][j]);
         }
     }
-    
-    p1max = profit[0][N - 1];
-    if (N % 2 == 0) {
-        outFile << p1max << " " << totalSum - p1max;
-    } else {
-        outFile << totalSum - p1max << " " << p1max;
-    }
 
-    outFile << endl;
+    p1max = profit[0][N - 1];
+    outFile << p1max << " " << totalSum - p1max << endl;
 
     inFile.close();
     outFile.close();
