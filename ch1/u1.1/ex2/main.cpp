@@ -1,30 +1,30 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 
 int main () {
-    FILE *inFile = fopen("tickets.in", "r");
-    FILE *outFile = fopen("tickets.out", "w");
+    ifstream inFile  ("tickets.in");
+    ofstream outFile ("tickets.out");
 
     if (NULL == inFile) {
-        fprintf(stderr, "main::fopen[in]");
+        cerr << "main::fopen[in]" << endl;
         exit(EXIT_FAILURE);
     }
     if (NULL == outFile) {
-        fprintf(stderr, "main::fopen[out]");
+        cerr << "main::fopen[out]" << endl;
         exit(EXIT_FAILURE);
     }
     
-    const unsigned int ticket= 10;
+    const unsigned int ticket = 10;
     const double discountA = 0.1, discountB = 0.2,
                  discountC = 0.3, discountD = 0.5;
+
     unsigned int students, limitA, limitB, limitC, limitD, minCost;
-    
-    fscanf(inFile, "%u\n%u%u%u%u",
-            &students,
-            &limitA, &limitB, &limitC, &limitD);
+    inFile >> students >> limitA >> limitB >> limitC >> limitD;
  
     unsigned int tempAB, tempCD;
     tempAB = min(max(students, limitA) * ticket * (1 - discountA),
@@ -37,9 +37,10 @@ int main () {
                   min(tempAB, tempCD)
                  );
 
-    fprintf(outFile, "%u\n", minCost);
-    fclose(inFile);
-    fclose(outFile);
+    outFile << minCost << endl;
+
+    inFile.close();
+    outFile.close();
     
     return EXIT_SUCCESS;
 }
