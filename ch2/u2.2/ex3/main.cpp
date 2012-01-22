@@ -2,12 +2,25 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
+struct box {
+    unsigned int h;
+    unsigned int l;
+    unsigned int w;
+};
+
+unsigned int min3 (const unsigned int a1,
+                   const unsigned int a2,
+                   const unsigned int a3) {
+    return min(min(a1, a2), a3);
+}
+
 int main() {
-    ifstream inFile  ("ngame.in");
-    ofstream outFile ("ngame.out");
+    ifstream inFile  ("fillbox.in");
+    ofstream outFile ("fillbox.out");
 
     if (NULL == inFile) {
         cerr << "main::fopen[in]" << endl;
@@ -18,40 +31,62 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    const unsigned int maxN = 100;
-    unsigned int profit[maxN + 1][maxN + 1], nums[maxN + 1];
+    unsigned int L, W, H;
+    inFile >> L >> W >> H;
     
-    unsigned int N;
-    inFile >> N;
+    struct box currBox, auxBox;
+    currBox.h = H; currBox.l = L; currBox.w = W;
 
-    for (unsigned int i = 0; i < N; ++i) {
-        fill(profit[i], profit[i] + N, 0);
-        inFile >> nums[i];
-    }
+    stack<struct box> instances;
+    instances.push(currBox);
     
-    for (unsigned int i = 0, sum = 0; i < N; ++i) {
-        sum = 0;
-        for (unsigned int j = i; j < N; ++j) {
-           sum += nums[j];
-           profit[i][j] = sum;
+    unsigned long long int numCubes = 0, numCubesH, numCubesL, numCubesW;
+    unsigned int minDim, max2, dh, dl, dw;
+    do {
+        currBox = instances.top();
+        instances.pop();
+
+        minDim = min3(currBox.h, currBox.l, currBox.w);
+        if (0 == minDim) {
+            continue; // Mock box with no volume
         }
-    }
 
-    unsigned int totalSum = profit[0][N - 1], p1max = 0;
-    for (unsigned int i = 1; i < N; ++i) {
-        for (unsigned int ii = 0, j = i; j < N; ++ii, ++j) {
-           profit[ii][j] -= min(profit[ii][j - 1], profit[ii + 1][j]);
-        }
-    }
-    
-    p1max = profit[0][N - 1];
-    if (N % 2 == 0) {
-        outFile << p1max << " " << totalSum - p1max;
-    } else {
-        outFile << totalSum - p1max << " " << p1max;
-    }
+        for (max2 = 1; max2 <= minDim; max2 *= 2)
+            ; // Intentionally empty
+        max2 /= 2;
+        // Invariant: max2 is the largest power of two <= minDim.
 
-    outFile << endl;
+        // Fill currBox with largest possible 2^n cube
+        numCubesH = currBox.h / max2;
+        numCubesL = currBox.l / max2;
+        numCubesW = currBox.w / max2;
+
+        // Count cubes used.
+        numCubes += numCubesH * numCubesL * numCubesW;
+
+        // Determine residual dimensions.
+        dh = currBox.h - numCubesH * max2;
+        dl = currBox.l - numCubesL * max2;
+        dw = currBox.w - numCubesW * max2;
+        
+        // Generate remaining instances;
+        auxBox.h = dh;
+        auxBox.l = currBox.l;
+        auxBox.w = currBox.w;
+        instances.push(auxBox);
+
+        auxBox.h = currBox.h - dh;
+        auxBox.l = dl;
+        auxBox.w = currBox.w;
+        instances.push(auxBox);
+
+        auxBox.h = currBox.h - dh;
+        auxBox.l = currBox.l - dl;
+        auxBox.w = dw;
+        instances.push(auxBox);
+    } while (! instances.empty());
+
+    outFile << numCubes << endl;
 
     inFile.close();
     outFile.close();
